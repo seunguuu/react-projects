@@ -9,14 +9,12 @@ export function Table({ textArray }) {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            {textArray.map((data, index) => (
-              <div>
-                <td key={index}>{data.name}</td>
-                <td key={index}>{data.age}</td>
-              </div>
-            ))}
-          </tr>
+          {textArray.map((data, index) => (
+            <tr key={index}>
+              <td>{data.name}</td>
+              <td>{data.age}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
