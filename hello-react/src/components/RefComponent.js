@@ -9,15 +9,17 @@ export function RefComponent() {
   const itemRef = useRef();
 
   const onClickHandler = () => {
-    const item = itemRef.current.value;
+    // const item = itemRef.current.value;
+    const item = itemRef.current.get();
 
     // 비어있는지 체크
     if (item === "") {
       //   alert("값을 입력하세요.");
       console.log(alertModalRef.current);
-      alertModalRef.current.showModal();
+      alertModalRef.current.open();
 
-      itemRef.current.focus();
+      //   itemRef.current.focus();
+      itemRef.current.select();
       return;
     }
 
@@ -25,7 +27,10 @@ export function RefComponent() {
     setTextArray((prevState) => [...prevState, item]);
 
     // input 초기화
-    itemRef.current.value = "";
+    // itemRef.current.value = "";
+    itemRef.current.set("");
+    // itemRef.current.focus();
+    itemRef.current.select();
   };
 
   const onCloseModalHandler = () => {

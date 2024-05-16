@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { forwardRef, useRef, useImperativeHandle } from "react";
 /**
  * export: AlertModal 컴포넌트(함수)/변수/상수 등등을 외부로 공개하기 위한 방법
  * import { AlertModal } from "./path";
@@ -12,8 +12,23 @@ import { forwardRef } from "react";
 
 // export default function ALertModal({ children }) {
 const AlertModal = forwardRef(({ onClose, children }, ref) => {
+  const modal = useRef();
+
+  // props로 전달받은 ref의 current 값을 주입시키는 함수.
+  // 함수의 내용을 ref에 넣겠다. 라는 의미
+  useImperativeHandle(ref, () => {
+    return {
+      open() {
+        modal.current.showModal();
+      },
+      close() {
+        modal.current.close();
+      },
+    };
+  });
+
   return (
-    <dialog className="modal" ref={ref}>
+    <dialog className="modal" ref={modal}>
       <div className="modal-body">
         <section className="modal-close-button" onClick={onClose}>
           X
