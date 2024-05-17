@@ -1,4 +1,5 @@
-import { createContext, useState } from "react";
+import { createContext, useReducer } from "react";
+import { todoReducers } from "../reducers/todoReducers";
 
 /**
  * Context Store 생성.
@@ -18,36 +19,28 @@ export default TodoContext;
  * TodoContextProvider Component를 생성.
  */
 export function TodoContextProvider({ children }) {
-  const [todo, setTodo] = useState([]);
+  /**
+   * useReducer Hook을 이용해 State를 관리한다.
+   * todoState: reducer가 관리할 State
+   * todoDispatcher: Reducer에게 State 변경을 요청하는 함수
+   *                 todoReducer() 함수를 호출하게 된다.
+   */
+  const [todoState, todoDispatcher] = useReducer(todoReducers, []);
 
   // Provider가 관리할 State와 함수들을 작성.
   const contextValue = {
-    todo, // todo: todo,
+    todo: todoState,
     done(event) {
       const checkbox = event.currentTarget;
       const id = parseInt(checkbox.value);
 
-      // 변경되기 이전의 state를 가져와서 반복을 하는데
-      // 새로운 메모리에 들어있는 객체 리터럴을 만들어서 반환
-      setTodo((prevTodo) =>
-        prevTodo.map((todo) => {
-          if (todo.id === id) {
-            todo.isDone = checkbox.checked;
-          }
-          return { ...todo };
-        })
-      );
+      todoDispatcher({
+        type: "DONE",
+        payload: { id, isDone: checkbox.checked },
+      });
     },
     add(task, dueDate) {
-      setTodo((prevTodos) => [
-        ...prevTodos,
-        {
-          id: prevTodos.length,
-          isDone: false,
-          task, // task: task,
-          dueDate, // dueDate: dueDate,
-        },
-      ]);
+      todoDispatcher({ type: "ADD", payload: { task, dueDate } });
     },
   };
 
