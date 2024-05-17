@@ -13,6 +13,8 @@ export default function TodoApp({ todo, setTodo }) {
     const checkbox = event.currentTarget;
     const id = parseInt(checkbox.value);
 
+    // 변경되기 이전의 state를 가져와서 반복을 하는데
+    // 새로운 메모리에 들어있는 객체 리터럴을 만들어서 반환
     setTodo((prevTodo) =>
       prevTodo.map((todo) => {
         if (todo.id === id) {
