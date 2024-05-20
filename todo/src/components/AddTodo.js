@@ -1,15 +1,11 @@
-import { useRef } from "react";
+import { useRef, memo } from "react";
 
 /**
  * TODO 아이템을 등록하는 Component
  * App Component의 todo를 변경시키기 위해 setTodo 가 필요하다.
  */
-export default function AddTodo({ setTodo }) {
-  const styles = {
-    display: "flex",
-    padding: "0.5rem",
-    marginTop: "1rem",
-  };
+export default memo(function AddTodo({ onAdd, style }) {
+  console.log("Run AddTodo");
 
   const labelStyles = { flexShrink: 1, margin: "0.5rem 1rem" };
   const inputStyles = { flexGrow: 1 };
@@ -23,19 +19,11 @@ export default function AddTodo({ setTodo }) {
    * setTodo를 이용해서 TODO 아이템을 등록해야 한다.
    */
   const onClickHandler = () => {
-    setTodo((prevTodos) => [
-      ...prevTodos,
-      {
-        id: prevTodos.length,
-        isDone: false,
-        task: taskRef.current.value,
-        dueDate: dueDateRef.current.value,
-      },
-    ]);
+    onAdd(taskRef.current.value, dueDateRef.current.value);
   };
 
   return (
-    <div style={styles}>
+    <div style={style}>
       <label htmlFor="task" style={labelStyles}>
         TASK
       </label>
@@ -57,4 +45,4 @@ export default function AddTodo({ setTodo }) {
       </button>
     </div>
   );
-}
+});
