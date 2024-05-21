@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
 
-export default function Header({ token, setToken }) {
+export default function Header({ token, setToken, myInfo }) {
   const emailRef = useRef();
   const passwordRef = useRef();
 
@@ -37,7 +37,12 @@ export default function Header({ token, setToken }) {
     });
 
     const json = await response.json();
-    setToken(json.token);
+    if (json.message) {
+      alert(json.message);
+      return;
+    } else if (json.token) {
+      setToken(json.token);
+    }
 
     // token의 값을 브라우저의 로컬 스토리지에 작성한다.
     localStorage.setItem("token", json.token);
@@ -46,9 +51,25 @@ export default function Header({ token, setToken }) {
     // sessionStorage.setItem("token", json.token)
   };
 
+  // 로그아웃
+  const onLogoutClickHandler = () => {
+    // 로컬 스토리지에 있는 토큰 값을 지운다.
+    localStorage.removeItem("token");
+    setToken(undefined);
+  };
+
   return (
     <header>
-      {token && <div>로그인이 완료되었습니다.</div>}
+      {token && (
+        <div>
+          {myInfo && (
+            <div>
+              {myInfo.name}({myInfo.email})
+            </div>
+          )}
+          <span onClick={onLogoutClickHandler}>로그아웃</span>
+        </div>
+      )}
       {!token && (
         <div>
           <label htmlFor="email">EMAIL</label>

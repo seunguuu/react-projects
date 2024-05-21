@@ -1,39 +1,31 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Header from "./components/Header";
+import BoardApp from "./components/BoardApp";
 
 export default function App() {
   const [token, setToken] = useState();
 
-  const [boards, setBoards] = useState([]);
+  const [myInfo, setMyInfo] = useState();
 
   useEffect(() => {
-    // 게시글 불러오기
-    const loadBoards = async () => {
-      if (!token) {
-        return;
-      }
-
-      const response = await fetch("http://localhost:8080/api/v1/boards", {
+    const loadMember = async () => {
+      const response = await fetch("http://localhost:8080/api/v1/member", {
         method: "GET",
-        // GET 방식에선 body가 없다.
-        // Spring에서 beans - security - jwt - JwtAuthenticationFilter에서
-        // /api/ 로 시작하는 모든 URL에 Authorization 이라는 키에 토큰이 필요하기 때문
-        // 인증을 해야되기 때문에 headers가 필요하다.
         headers: { Authorization: token },
       });
 
       const json = await response.json();
-      console.log(json);
-      setBoards(json.body);
+      setMyInfo(json.body);
     };
-    loadBoards();
+    loadMember();
   }, [token]);
 
   return (
     <div className="main-container">
-      <Header token={token} setToken={setToken} />
-      <div>게시글 목록</div>
-      <div>게시글 등록</div>
+      <Header token={token} setToken={setToken} myInfo={myInfo} />
+      <main>
+        <BoardApp token={token} myInfo={myInfo} />
+      </main>
     </div>
   );
 }
