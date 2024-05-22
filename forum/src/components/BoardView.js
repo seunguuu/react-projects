@@ -59,6 +59,7 @@ export default function BoardView({
       {!boardItem && <div>데이터를 불러오는 중입니다.</div>}
       {boardItem && !isModifyMode && (
         <div>
+          <h3>{boardItem.subject}</h3>
           <div>
             작성자: {boardItem.memberVO.name}({boardItem.email})
           </div>

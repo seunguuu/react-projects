@@ -58,9 +58,11 @@ export default function ModifyBoardForm({
       </div>
       <div>
         <label htmlFor="content">내용</label>
-        <textarea id="content" ref={contentRef}>
-          {boardItem.content}
-        </textarea>
+        <textarea
+          id="content"
+          ref={contentRef}
+          defaultValue={boardItem.content}
+        ></textarea>
       </div>
       <div className="button-area right-align">
         <button onClick={onCancelClickHandler}>취소</button>
