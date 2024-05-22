@@ -1,23 +1,23 @@
-import { useEffect, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Header from "./components/Header";
 import BoardApp from "./components/BoardApp";
 import { loadMyData } from "./http/http";
+import { useFetch } from "./hooks/useFetch";
 
 export default function App() {
   const [token, setToken] = useState();
 
-  const [myInfo, setMyInfo] = useState();
+  // Component를 실행시키자마자 API 요청으로 데이터를 받아오는 부분
+  const fetchLoadMyData = useCallback(loadMyData, [token]);
 
-  useEffect(() => {
-    const loadMember = async () => {
-      if (!token) {
-      }
-      const json = await loadMyData(token);
-
-      setMyInfo(json.body);
-    };
-    loadMember();
+  // 토큰이 바뀌면 객체 리터럴이 다시 생성되어서 실행해라
+  const fetchToken = useMemo(() => {
+    return { token };
   }, [token]);
+
+  const { data } = useFetch(undefined, fetchLoadMyData, fetchToken);
+  // 사용자 정보
+  const { body: myInfo } = data || {};
 
   return (
     <div className="main-container">

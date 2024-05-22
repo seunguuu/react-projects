@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import ModifyBoardForm from "./ModifyBoardForm";
 import { deleteBoards, viewBoards } from "../http/http";
+import { useFetch } from "../hooks/useFetch";
 
 export default function BoardView({
   selectedBoardId,
@@ -9,7 +10,6 @@ export default function BoardView({
   setNeedReload,
   myInfo,
 }) {
-  const [boardItem, setBoardItem] = useState();
   const [isModifyMode, setIsModifyMode] = useState();
   const [needReloadDetail, setNeedReloadDetail] = useState();
 
@@ -42,21 +42,23 @@ export default function BoardView({
     setNeedReload(Math.random());
   };
 
-  useEffect(() => {
-    // props로 받아온 것을 useEffect 내부에서 사용할때
-    // 사용되는 변수를 [] 안에 넣어줘야 한다.
-    const loadBoard = async () => {
-      const json = await viewBoards(token, selectedBoardId);
+  // Component를 실행시키자마자 API 요청으로 데이터를 받아오는 부분
+  const fetchLoadOneBoard = useCallback(viewBoards, []);
 
-      console.log(json);
-      setBoardItem(json.body);
-    };
-    loadBoard();
+  const fetchParam = useMemo(() => {
+    return { selectedBoardId, token, needReloadDetail };
   }, [selectedBoardId, token, needReloadDetail]);
+
+  const { data, isLoading } = useFetch(
+    undefined,
+    fetchLoadOneBoard,
+    fetchParam
+  );
+  const { body: boardItem } = data || {};
 
   return (
     <div>
-      {!boardItem && <div>데이터를 불러오는 중입니다.</div>}
+      {isLoading && <div>데이터를 불러오는 중입니다.</div>}
       {boardItem && !isModifyMode && (
         <div>
           <h3>{boardItem.subject}</h3>

@@ -24,5 +24,5 @@ export function useFetch(initialValue, fnFetch, param) {
     fetchingData();
   }, [fnFetch, param]);
 
-  return { data, isLoading };
+  return { data, isLoading, setData };
 }
