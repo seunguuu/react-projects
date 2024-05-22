@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { writeBoards } from "../http/http";
 
 export default function WriteBoardForm({
   setIsWriteMode,
@@ -27,14 +28,8 @@ export default function WriteBoardForm({
     formData.append("file", file);
     // 이렇게 작성하면 nultipart/form-data로 전송된다.
 
-    const response = await fetch("http://localhost:8080/api/v1/boards", {
-      method: "POST",
-      headers: {
-        Authorization: token,
-      },
-      body: formData,
-    });
-    const json = await response.json();
+    const json = await writeBoards(token, formData);
+
     console.log(json);
 
     // 에러가 있다면 반복하면서 에러를 띄워라.

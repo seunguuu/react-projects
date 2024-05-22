@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import ModifyBoardForm from "./ModifyBoardForm";
+import { deleteBoards, viewBoards } from "../http/http";
 
 export default function BoardView({
   selectedBoardId,
@@ -6,25 +8,18 @@ export default function BoardView({
   token,
   setNeedReload,
   myInfo,
-  setIsWriteMode,
-  setIsModifyMode,
 }) {
   const [boardItem, setBoardItem] = useState();
+  const [isModifyMode, setIsModifyMode] = useState();
+  const [needReloadDetail, setNeedReloadDetail] = useState();
 
   const onModifyModeClickHandler = () => {
     setIsModifyMode(true);
   };
 
   const onDeleteClickHandler = async () => {
-    const response = await fetch(
-      `http://localhost:8080/api/v1/boards/${boardItem.id}`,
-      {
-        method: "DELETE",
-        headers: { Authorization: token },
-      }
-    );
+    const json = await deleteBoards(token, boardItem);
 
-    const json = await response.json();
     if (json.body) {
       // 삭제 성공!
       // 목록에서 컴포넌트를 노출.
@@ -44,28 +39,25 @@ export default function BoardView({
 
   const onViewListClickHandler = () => {
     setSelectedBoardId(undefined);
+    setNeedReload(Math.random());
   };
 
   useEffect(() => {
     // props로 받아온 것을 useEffect 내부에서 사용할때
     // 사용되는 변수를 [] 안에 넣어줘야 한다.
     const loadBoard = async () => {
-      const response = await fetch(
-        `http://localhost:8080/api/v1/boards/${selectedBoardId}`,
-        { method: "GET", headers: { Authorization: token } }
-      );
+      const json = await viewBoards(token, selectedBoardId);
 
-      const json = await response.json();
       console.log(json);
       setBoardItem(json.body);
     };
     loadBoard();
-  }, [selectedBoardId, token]);
+  }, [selectedBoardId, token, needReloadDetail]);
 
   return (
     <div>
       {!boardItem && <div>데이터를 불러오는 중입니다.</div>}
-      {boardItem && (
+      {boardItem && !isModifyMode && (
         <div>
           <div>
             작성자: {boardItem.memberVO.name}({boardItem.email})
@@ -81,13 +73,24 @@ export default function BoardView({
         </div>
       )}
 
+      {isModifyMode && (
+        <ModifyBoardForm
+          boardItem={boardItem}
+          token={token}
+          setIsModifyMode={setIsModifyMode}
+          setNeedReload={setNeedReload}
+          setNeedReloadDetail={setNeedReloadDetail}
+        />
+      )}
+
       <div className="button-area right-align">
         {
           /** 로그인한 사용자가 있고
            *   (로그인한 사용자의 이메일과 게시글을 작성한 사람이 같거나 관리자일 경우
            *   삭제 버튼이 보이도록 한다.
            * */
-          myInfo &&
+          !isModifyMode &&
+            myInfo &&
             boardItem &&
             (myInfo.email === boardItem.email || myInfo.adminYn === "Y") && (
               <>
@@ -96,7 +99,9 @@ export default function BoardView({
               </>
             )
         }
-        <button onClick={onViewListClickHandler}>목록보기</button>
+        {!isModifyMode && (
+          <button onClick={onViewListClickHandler}>목록보기</button>
+        )}
       </div>
     </div>
   );

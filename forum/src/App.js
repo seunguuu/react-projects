@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Header from "./components/Header";
 import BoardApp from "./components/BoardApp";
+import { loadMyData } from "./http/http";
 
 export default function App() {
   const [token, setToken] = useState();
@@ -9,12 +10,10 @@ export default function App() {
 
   useEffect(() => {
     const loadMember = async () => {
-      const response = await fetch("http://localhost:8080/api/v1/member", {
-        method: "GET",
-        headers: { Authorization: token },
-      });
+      if (!token) {
+      }
+      const json = await loadMyData(token);
 
-      const json = await response.json();
       setMyInfo(json.body);
     };
     loadMember();
