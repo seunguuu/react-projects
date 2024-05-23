@@ -10,6 +10,12 @@ const todoSliceStore = createSlice({
   initialState: [],
   // slice store reducers 생성.
   reducers: {
+    // Firebase에서 데이터를 가져오기 위함
+    load(state, action) {
+      if (state.length === 0) {
+        state.push(...action.payload);
+      }
+    },
     // state: 변경 가능한 State, action: state를 변경시킬 값
     add(state, action) {
       console.log("todo > add: ", action);
@@ -17,7 +23,7 @@ const todoSliceStore = createSlice({
 
       // State를 직접 변경한다.
       state.push({
-        id: state.length,
+        id: payload.id,
         isDone: false,
         task: payload.task,
         dueDate: payload.dueDate,
@@ -50,6 +56,68 @@ const todoSliceStore = createSlice({
     },
   },
 });
+
+// 액션 생성자를 이용한 액션 정의
+// Thunk => 액션 생성자
+export const loadTodo = () => {
+  return async (dispatch) => {
+    // Firebase에서 Todo 목록을 가져와
+    const url = "https://react-todo-5ddf8-default-rtdb.firebaseio.com/";
+    const response = await fetch(`${url}/todo.json`, {
+      method: "GET",
+    });
+    const json = await response.json();
+    console.log(json);
+
+    const todoList = [];
+    for (let key in json) {
+      //   console.log("key", key);
+      //   console.log("value", json[key]);
+      todoList.push(json[key]);
+    }
+
+    console.log(todoList);
+    // todoSliceStore에 저장한다.
+    dispatch(todoActions.load(todoList));
+  };
+};
+export const addTodo = (newTodoItem) => {
+  // 사용자가 생성한 새로운 todo 항목을
+  return async (dispatch) => {
+    // todoSliceStore에 저장하고
+    dispatch(todoActions.add(newTodoItem));
+
+    // Firebase에도 저장한다.
+    const url = "https://react-todo-5ddf8-default-rtdb.firebaseio.com/";
+
+    const response = await fetch(`${url}/todo/${newTodoItem.id}.json`, {
+      method: "PUT",
+      body: JSON.stringify(newTodoItem),
+    });
+
+    const json = await response.json();
+    console.log(json);
+  };
+};
+export const doneTodo = (doneTodoItem) => {
+  // 사용자가 완료한 todo 항목을
+  return async (dispatch) => {
+    console.log("???????", doneTodoItem);
+    // todoSliceStore에 저장하고
+    dispatch(todoActions.done(doneTodoItem));
+
+    // Firebase에도 저장한다.
+    const url = "https://react-todo-5ddf8-default-rtdb.firebaseio.com/";
+
+    const response = await fetch(`${url}/todo/${doneTodoItem.id}.json`, {
+      method: "PUT",
+      body: JSON.stringify(doneTodoItem),
+    });
+
+    const json = await response.json();
+    console.log(json);
+  };
+};
 
 // 2. Redux Store 생성.
 const toolkitStore = configureStore({

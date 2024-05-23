@@ -1,7 +1,8 @@
 import Todo from "./Todo";
 import AddTodo from "./AddTodo";
 import { useMemo } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { loadTodo } from "../stores/toolkit/store";
 
 export default function TodoApp() {
   console.log("Run TodoApp");
@@ -10,6 +11,10 @@ export default function TodoApp() {
   // React redux가 관리하는 state는 읽기 전용.
   // state를 원하는 형태로 복제해서 사용.
   const todo = useSelector((state) => [...state.todo]);
+
+  // store의 reducer 호출
+  const todoDispatch = useDispatch();
+  todoDispatch(loadTodo());
 
   // 2. setTodo를 대체하기 위해서 useDispatch를 사용.
   //    TodoApp 컴포넌트에서는 굳이 이벤트 함수를 만들 필요가 없다.
