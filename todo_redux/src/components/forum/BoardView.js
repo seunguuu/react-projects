@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import ModifyBoardForm from "./ModifyBoardForm";
 import { deleteBoards, viewBoards } from "../../http/http";
 import { useFetch } from "../../hooks/useFetch";

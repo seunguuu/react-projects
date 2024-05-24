@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { useDispatch } from "react-redux";
 import { doneTodo } from "../../stores/toolkit/store";
+import { Link } from "react-router-dom";
 
 /**
  * Todo Item을 관리하는 Component
@@ -27,8 +28,6 @@ export default function Todo({ todo, style }) {
     const checkbox = checkboxRef.current;
     const checked = checkbox.checked;
 
-    console.log(checked, ">>>>>>>>>>>");
-
     // Thunk Dispatch 코드
     todoDispatch(doneTodo({ id, task, dueDate, isDone: checked }));
 
@@ -54,7 +53,11 @@ export default function Todo({ todo, style }) {
           ref={checkboxRef}
         />
       </div>
-      <div style={{ flexGrow: 1 }}>{task}</div>
+      <div style={{ flexGrow: 1 }}>
+        <Link to={`/todo/${id}`} style={{ color: isDone ? "#ccc" : "#333" }}>
+          {task}
+        </Link>
+      </div>
       <div>{dueDate}</div>
     </li>
   );

@@ -10,13 +10,14 @@
  *      - URL별로 브라우저에 노출시킬 컴포넌트를 정의
  * RouterProvider : createBrowserRouter에서 정의한 규칙을 전파하는 역할
  */
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import Main from "../components/main/Main";
 import ToolkitProvider from "../stores/toolkit/store";
 import TodoApp from "../components/todo/TodoApp";
 import MainLayout from "../layout/MainLayout";
 import ForumApp from "../components/forum/ForumApp";
 import NotFound from "../components/errors/NotFound";
+import SubTodo from "../components/todo/SubTodo";
 
 export default function RouterAppProvider() {
   const routers = createBrowserRouter([
@@ -29,12 +30,19 @@ export default function RouterAppProvider() {
         { index: true, element: <Main /> },
         // MainLayout 컴포넌트의 Outlet 컴포넌트의 ToolkitProvider 컴포넌트를 노출시킨다.
         {
-          path: "todo",
+          path: "todo/",
           element: (
             <ToolkitProvider>
-              <TodoApp />
+              {/** Path (URL)가 달라질 때 마다
+               * Outlet에 노출되는 컴포넌트가 달라진다.
+               */}
+              <Outlet />
             </ToolkitProvider>
           ),
+          children: [
+            { index: true, element: <TodoApp /> },
+            { path: ":id", element: <SubTodo /> },
+          ],
         },
         { path: "forum", element: <ForumApp /> },
       ],

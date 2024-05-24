@@ -1,12 +1,12 @@
 import { useRef, memo } from "react";
 import { useDispatch } from "react-redux";
-import { addTodo } from "../../stores/toolkit/store";
+import { addSubTodo, addTodo } from "../../stores/toolkit/store";
 
 /**
  * TODO 아이템을 등록하는 Component
  * App Component의 todo를 변경시키기 위해 setTodo 가 필요하다.
  */
-export default memo(function AddTodo({ style }) {
+export default memo(function AddTodo({ style, sub, parentTodoId }) {
   console.log("Run AddTodo");
 
   const labelStyles = { flexShrink: 1, margin: "0.5rem 1rem" };
@@ -27,14 +27,20 @@ export default memo(function AddTodo({ style }) {
 
     // Thunk Dispatch 코드
     // todoDispatch가 addTodo의 dispatch 파라미터로 들어간다.
-    todoDispatch(
-      addTodo({
-        id: parseInt(Math.random() * 100_000_000),
-        isDone: false,
-        task: taskRef.current.value,
-        dueDate: dueDateRef.current.value,
-      })
-    );
+    const payload = {
+      id: parseInt(Math.random() * 100_000_000),
+      isDone: false,
+      task: taskRef.current.value,
+      dueDate: dueDateRef.current.value,
+    };
+
+    if (sub) {
+      // SubTodo. 등록
+      payload.parentTodoId = parentTodoId;
+    }
+
+    const thunk = sub ? addSubTodo(payload) : addTodo(payload);
+    todoDispatch(thunk);
 
     // // toolkit Dispatch 코드
     // todoDispatch(
@@ -53,12 +59,6 @@ export default memo(function AddTodo({ style }) {
     //     dueDate: dueDateRef.current.value,
     //   },
     // });
-
-    // 값 초기화
-    taskRef.current.value = "";
-    dueDateRef.current.value = "";
-    // TASK 에 Focus
-    taskRef.current.focus();
   };
 
   return (
