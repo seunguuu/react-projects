@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { useDispatch } from "react-redux";
-import { doneTodo, todoActions } from "../stores/toolkit/store";
+import { doneTodo } from "../../stores/toolkit/store";
 
 /**
  * Todo Item을 관리하는 Component

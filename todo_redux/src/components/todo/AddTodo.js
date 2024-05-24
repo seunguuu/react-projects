@@ -1,6 +1,6 @@
 import { useRef, memo } from "react";
 import { useDispatch } from "react-redux";
-import { addTodo, todoActions } from "../stores/toolkit/store";
+import { addTodo } from "../../stores/toolkit/store";
 
 /**
  * TODO 아이템을 등록하는 Component
